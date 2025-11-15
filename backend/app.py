@@ -22,18 +22,35 @@ import mysql.connector
 @app.get("/get_listings")
 def getListings():
   '''Returns all of the professors listings'''
-  conn = sqlite3.connect("database.sql")   # or .db
-  conn.row_factory = sqlite3.Row          # enables dict-like rows
-  cur = conn.cursor()
+  # conn = sqlite3.connect("database.sql")   # or .db
+  # conn.row_factory = sqlite3.Row          # enables dict-like rows
+  # cur = conn.cursor()
 
-  cur.execute("SELECT * FROM research_postings;")
-  rows = cur.fetchall()
+  # cur.execute("SELECT * FROM research_postings;")
+  # rows = cur.fetchall()
 
-  # Convert sqlite Row objects → dicts
-  result = [dict(row) for row in rows]
+  # # Convert sqlite Row objects → dicts
+  # result = [dict(row) for row in rows]
+  conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='claude-for-good',
+        database='research_atlas'  
+    )
+    
+  cursor = conn.cursor(dictionary=True)
+    
+  try:
+      cursor.execute("SELECT * FROM research_postings;")
 
-  conn.close()
-  return {"listings": result}
+      # return cursor.fetchall()
+      rows = cursor.fetchall()
+      result = [dict(row) for row in rows]
+      
+  finally:
+      cursor.close()
+      conn.close()
+      return {"listings": result}
 
 
 
@@ -77,9 +94,11 @@ def createListing(listing: Listing):
    return
 
 # return the top candidates for the position
-@app.get("top_candidates")
+
+@app.get("/top_candidates")
 def topXCandidates(X: int, listing_id: str):
   '''Returns the top X candidates for the position'''
+  # filtered_candidates = 
   return
 
 
