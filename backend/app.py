@@ -51,6 +51,7 @@ def getListings():
       cursor.close()
       conn.close()
       return {"listings": result}
+  
 
 
 
@@ -94,11 +95,12 @@ def createListing(listing: Listing):
    return
 
 # return the top candidates for the position
+import filter
 
 @app.get("/top_candidates")
 def topXCandidates(X: int, listing_id: str):
   '''Returns the top X candidates for the position'''
-  # filtered_candidates = 
+  filtered_candidates = filter.filter_by_interest("")
   return
 
 
