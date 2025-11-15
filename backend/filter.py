@@ -1,13 +1,25 @@
 import mysql.connector
-from typing import List, Dict
+from typing import List, Dict, Optional
+
+DB_CONFIG = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'HorusGod12!',
+    'database': 'research_atlas'
+}
+
+def get_connection():
+    """Create and return a database connection"""
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        print("Works")
+        return connection
+    except mysql.connector.Error as err:
+        print(f"Error connecting to database: {err}")
+        return None
 
 def filter_by_interest(research_area: str) -> List[Dict]:
-    conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='claude-for-good',
-        database='research_atlas'  
-    )
+    conn = get_connection()
     
     cursor = conn.cursor(dictionary=True)
     
@@ -29,3 +41,5 @@ def filter_by_interest(research_area: str) -> List[Dict]:
     finally:
         cursor.close()
         conn.close()
+
+get_connection()

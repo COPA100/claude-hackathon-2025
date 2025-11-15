@@ -1,4 +1,4 @@
--- Main users table (for authentication and basic info)
+-- Main users table
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -56,11 +56,7 @@ CREATE TABLE student_experiences (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- ============================================
--- RESEARCH POSTINGS DATABASE
--- ============================================
-
--- Research opportunity postings
+-- Research postings
 CREATE TABLE research_postings (
     posting_id INT PRIMARY KEY AUTO_INCREMENT,
     faculty_id INT NOT NULL,
@@ -72,16 +68,14 @@ CREATE TABLE research_postings (
     duration VARCHAR(100),
     compensation_type ENUM('paid', 'credit', 'volunteer') NOT NULL,
     compensation_details VARCHAR(255),
-    is_remote BOOLEAN DEFAULT FALSE,
     start_date DATE,
     application_deadline DATE,
     status ENUM('open', 'closed', 'filled') DEFAULT 'open',
     posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (faculty_id) REFERENCES faculty_profiles(faculty_id) ON DELETE CASCADE
 );
 
--- Applications from students
+-- Applications
 CREATE TABLE applications (
     application_id INT PRIMARY KEY AUTO_INCREMENT,
     posting_id INT NOT NULL,
@@ -94,7 +88,7 @@ CREATE TABLE applications (
     UNIQUE KEY unique_application (posting_id, student_id)
 );
 
--- Saved/bookmarked postings
+-- Saved postings
 CREATE TABLE saved_postings (
     user_id INT,
     posting_id INT,
