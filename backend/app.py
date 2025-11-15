@@ -25,7 +25,7 @@ def getTopPosts():
 # Extracts the relevant features from the resume
 import resume_ai
 
-@app.get("/embed_resume")
+@app.post("/embed_resume")
 def embedResume(file: Annotated[bytes, File()]):
   embed = resume_ai.extract_text_from_pdf()
   try:
@@ -56,10 +56,16 @@ class Listing(BaseModel):
   minimum_time_commitment: str                  # e.g. "10 hrs/week"
   duration: str 
 
-@app.get("/create_listing", )
+@app.post("/create_listing", )
 def createListing(listing: Listing):
+  #  Add to listing database
    return
-   
+
+# return the top candidates for the position
+@app.get("top_candidates")
+def topXCandidates(X: int, listing_id: str):
+  '''Returns the top X candidates for the position'''
+  return
 
 
 if __name__ == "__main__":
