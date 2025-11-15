@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from typing import Annotated, Optional, List, Literal
@@ -8,17 +9,31 @@ from pydantic import BaseModel
 from uuid import UUID
 
 app = FastAPI(title="Claude Hackathon API")
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # ngrok endpoint
-#     allow_methods=["*"],  # Allow all HTTP methods: POST, GET, etc.
-#     allow_headers=["*"],  # Allow all headers
-#     allow_credentials=False
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ngrok endpoint
+    allow_methods=["*"],  # Allow all HTTP methods: POST, GET, etc.
+    allow_headers=["*"],  # Allow all headers
+    allow_credentials=False
+)
 
-@app.get("/top_posts")
-def getTopPosts():
-    return
+import sqlite3
+import mysql.connector
+@app.get("/get_listings")
+def getListings():
+  '''Returns all of the professors listings'''
+  conn = sqlite3.connect("database.sql")   # or .db
+  conn.row_factory = sqlite3.Row          # enables dict-like rows
+  cur = conn.cursor()
+
+  cur.execute("SELECT * FROM research_postings;")
+  rows = cur.fetchall()
+
+  # Convert sqlite Row objects → dicts
+  result = [dict(row) for row in rows]
+
+  conn.close()
+  return {"listings": result}
 
 
 
