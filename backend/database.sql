@@ -17,7 +17,7 @@ CREATE TABLE student_profiles (
     student_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT UNIQUE NOT NULL,
     major VARCHAR(100),
-    year_of_study ENUM('undergraduate', 'graduate'),
+    year_of_study INT,
     gpa DECIMAL(3,2),
     bio TEXT,
     interests TEXT,
