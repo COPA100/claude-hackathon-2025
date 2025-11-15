@@ -8,8 +8,15 @@ from pydantic import BaseModel
 from uuid import UUID
 
 app = FastAPI(title="Claude Hackathon API")
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],  # ngrok endpoint
+#     allow_methods=["*"],  # Allow all HTTP methods: POST, GET, etc.
+#     allow_headers=["*"],  # Allow all headers
+#     allow_credentials=False
+# )
 
-app.get("/top_posts")
+@app.get("/top_posts")
 def getTopPosts():
     return
 
@@ -18,7 +25,7 @@ def getTopPosts():
 # Extracts the relevant features from the resume
 import resume_ai
 
-app.get("/embed_resume")
+@app.get("/embed_resume")
 def embedResume(file: Annotated[bytes, File()]):
   embed = resume_ai.extract_text_from_pdf()
   try:
@@ -29,21 +36,35 @@ def embedResume(file: Annotated[bytes, File()]):
     #  Return some signal to the user that the resume went through
   return 
 
-class listing(BaseModel):
+class Requirements(BaseModel):
+  year: int
+  availability: float #hours/week
+  gpa: Optional[float] = None
+  experience: str
+  graduate: bool = False
+
+  # This next one is experimental
+  min_experience_score: Optional[float] = None
+
+class Listing(BaseModel):
   id: UUID
   description: str
   pay_type: Literal["paid", "credit", "volunteer"]
   compensation_amount: Optional[float] = None   # for paid roles
   credit_amount: Optional[float] = None         # for credit roles
-  requirements: List[str]
+  requirements: Requirements
   minimum_time_commitment: str                  # e.g. "10 hrs/week"
   duration: str 
 
-app.get("/create_listing", )
-def createListing(listing: listing):
+@app.get("/create_listing", )
+def createListing(listing: Listing):
    return
    
 
 
 if __name__ == "__main__":
-   uvicorn.run(app, port="8802")
+  host = "0.0.0.0"
+  uvicorn.run(app="app:app",
+                host=host,
+                port = 8802,
+                reload=True)

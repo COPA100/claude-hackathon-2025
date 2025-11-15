@@ -45,4 +45,4 @@ def extract_resume_fields(pdf_path):
 
     return resp.content[0].text
 
-print(extract_resume_fields("backend/London Grant Resume Google.pdf"))
+# print(extract_resume_fields("backend/London Grant Resume Google.pdf"))
