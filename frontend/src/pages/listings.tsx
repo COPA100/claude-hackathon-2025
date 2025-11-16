@@ -125,19 +125,22 @@ function ListingsPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("http://172.25.83.86:8802/get_listings", {
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await fetch(
+                    "http://172.25.83.86:8802/get_listings",
+                    {
+                        mode: "cors",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
 
                 console.log(response);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
 
                 console.log(data);
@@ -148,10 +151,14 @@ function ListingsPage() {
                 setError(null);
             } catch (e) {
                 console.error("Error fetching listings:", e);
-                if (e instanceof TypeError && e.message === 'Failed to fetch') {
-                    setError("Cannot connect to server. Check if the backend is running and CORS is enabled.");
+                if (e instanceof TypeError && e.message === "Failed to fetch") {
+                    setError(
+                        "Cannot connect to server. Check if the backend is running and CORS is enabled."
+                    );
                 } else {
-                    setError(e instanceof Error ? e.message : "An error occurred");
+                    setError(
+                        e instanceof Error ? e.message : "An error occurred"
+                    );
                 }
             } finally {
                 setLoading(false);
