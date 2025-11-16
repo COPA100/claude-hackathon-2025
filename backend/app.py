@@ -97,7 +97,7 @@ def topXCandidates(listing_id: str):
   try:
       with conn.cursor(cursor_factory=RealDictCursor) as cursor:
           cursor.execute(
-              "SELECT * FROM research_postings WHERE id = %s;",
+              "SELECT * FROM research_postings WHERE posting_id = %s;",
               (str(listing_id),)  # tuple required
           )
           listing = cursor.fetchone()
