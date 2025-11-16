@@ -112,8 +112,11 @@ def topXCandidates(listing_id: str):
   filtered_candidates = database.filter_by_interest(research_area)
 
   rankings = sifting_ai.Compatability(description, filtered_candidates)
-  sorted_items = sorted(rankings.items(), key=lambda x: x[1], reverse=True)
+  sorted_items = sorted(rankings.items(),
+        key=lambda item: item[1][1],   # sort by the number (second element)
+        reverse=True)
   top_five = dict(sorted_items[:5])
+  print(top_five)
   return top_five
   
 

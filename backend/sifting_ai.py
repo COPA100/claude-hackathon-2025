@@ -23,6 +23,7 @@ def getScore(description, candidate_experience):
         messages=[{"role": "user", "content": prompt}]
     )
 
+    # print(resp.content[0].text)
     return resp.content[0].text
 
 
@@ -31,7 +32,7 @@ def Compatability(description:str, candidates):
     all_scores:dict = {}
     for candidate in candidates:
         score = float(getScore(description,candidate["student_experiences"]))
-        all_scores[candidate] = score
+        all_scores[candidate["student_id"]] = [candidate, score]
 
     return all_scores
 
