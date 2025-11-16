@@ -11,7 +11,7 @@ function Navbar() {
                 >
                     <img
                         src={logo}
-                        className="w-12 h-12 overflow-hidden scale-120"
+                        className="w-12 h-12 overflow-hidden scale-120 mt-1"
                     ></img>
                     Research Atlas
                 </Link>
@@ -35,6 +35,16 @@ function Navbar() {
                         }
                     >
                         Applicants
+                    </NavLink>
+                    <NavLink
+                        to="/recruiting"
+                        className={({ isActive }) =>
+                            `hover:text-purple-600 transition-colors ${
+                                isActive ? "text-purple-600 font-medium" : ""
+                            }`
+                        }
+                    >
+                        Recruiting
                     </NavLink>
                 </nav>
             </div>
