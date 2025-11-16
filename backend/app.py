@@ -33,7 +33,7 @@ def getListings():
     with connection.cursor(cursor_factory=RealDictCursor) as cursor:
       cursor.execute("SELECT * FROM research_postings;")
       rows = cursor.fetchall()
-      print(rows)
+      # print(rows)
       return {"listings": rows}
   finally:
     connection.close()
@@ -85,7 +85,8 @@ def createListing(listing: Listing):
   return
 
 # return the top candidates for the position
-import filter
+# import filter
+import database
 import sifting_ai
 
 @app.get("/top_candidates/{listing_id}")
@@ -108,7 +109,7 @@ def topXCandidates(listing_id: str):
 
   research_area = listing["research_areas"][0]
   description = listing["description"]
-  filtered_candidates = filter.filter_by_interest(research_area)
+  filtered_candidates = database.filter_by_interest(research_area)
 
   rankings = sifting_ai.Compatability(description, filtered_candidates)
   sorted_items = sorted(rankings.items(), key=lambda x: x[1], reverse=True)
