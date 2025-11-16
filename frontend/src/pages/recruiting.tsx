@@ -96,29 +96,36 @@ export default function RecruitingPage() {
         const fetchListings = async () => {
             try {
                 setLoading(true);
-                const response = await fetch("http://172.25.83.86:8802/get_listings", {
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await fetch(
+                    "http://172.25.83.86:8802/get_listings",
+                    {
+                        mode: "cors",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                
+
                 // Extract listings array from response object
                 const listings = data.listings || data;
                 setListings(listings);
                 setError(null);
             } catch (e) {
                 console.error("Error fetching listings:", e);
-                if (e instanceof TypeError && e.message === 'Failed to fetch') {
-                    setError("Cannot connect to server. Check if the backend is running and CORS is enabled.");
+                if (e instanceof TypeError && e.message === "Failed to fetch") {
+                    setError(
+                        "Cannot connect to server. Check if the backend is running and CORS is enabled."
+                    );
                 } else {
-                    setError(e instanceof Error ? e.message : "An error occurred");
+                    setError(
+                        e instanceof Error ? e.message : "An error occurred"
+                    );
                 }
             } finally {
                 setLoading(false);
@@ -126,7 +133,6 @@ export default function RecruitingPage() {
         };
 
         fetchListings();
-        
     }, []);
 
     return (
@@ -139,7 +145,10 @@ export default function RecruitingPage() {
 
             <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-600">
-                    <span className="font-medium">How it works:</span> Our AI will analyze your job requirements and search through applicant profiles to find the most qualified candidates based on their experience, skills, and qualifications.
+                    <span className="font-medium">How it works:</span> Our AI
+                    will analyze your job requirements and search through
+                    applicant profiles to find the most qualified candidates
+                    based on their experience, skills, and qualifications.
                 </p>
             </div>
 
@@ -158,9 +167,17 @@ export default function RecruitingPage() {
                     {listings && listings.length > 0 ? (
                         listings.map((listing) => (
                             <RecruitingCard
-                                key={listing.posting_id || listing.listing_id || 0}
+                                key={
+                                    listing.posting_id ||
+                                    listing.listing_id ||
+                                    0
+                                }
                                 listingTitle={listing.title}
-                                listingId={listing.posting_id || listing.listing_id || 0}
+                                listingId={
+                                    listing.posting_id ||
+                                    listing.listing_id ||
+                                    0
+                                }
                             />
                         ))
                     ) : (
