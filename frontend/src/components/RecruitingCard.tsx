@@ -42,7 +42,7 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
         console.log("Searching for applicants for listing:", listingId);
         
         try {
-            const response = await fetch(`http://172.25.83.86:8802/top_candidates?listing_id=${listingId}`, {
+            const response = await fetch(`http://172.25.83.86:8802/top_candidates/${listingId}`, {
                 method: "GET",
                 mode: "cors",
                 headers: {

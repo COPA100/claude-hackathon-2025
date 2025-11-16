@@ -47,7 +47,10 @@ export default function ApplicantsPage() {
                     throw new Error(`Failed to fetch listings: ${listingsResponse.status}`);
                 }
 
-                const listings = await listingsResponse.json();
+                const data = await listingsResponse.json();
+                
+                // Extract listings array from response object
+                const listings = data.listings || data;
                 
                 // Ensure listings is an array
                 const listingsArray = Array.isArray(listings) ? listings : [listings];
@@ -67,6 +70,8 @@ export default function ApplicantsPage() {
                                 listing_id: listing.listing_id,
                             }),
                         });
+
+                        
 
                         if (!response.ok) {
                             console.error(`Failed to fetch applicants for listing ${listing.listing_id}`);

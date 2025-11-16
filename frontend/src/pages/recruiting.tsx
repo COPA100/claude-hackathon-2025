@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import RecruitingCard from "../components/RecruitingCard";
 
 interface ResearchPosting {
-    listing_id: number;
+    posting_id?: number;
+    listing_id?: number;
     title: string;
     description: string;
     department: string;
@@ -107,7 +108,10 @@ export default function RecruitingPage() {
                 }
                 
                 const data = await response.json();
-                setListings(data);
+                
+                // Extract listings array from response object
+                const listings = data.listings || data;
+                setListings(listings);
                 setError(null);
             } catch (e) {
                 console.error("Error fetching listings:", e);
@@ -154,9 +158,9 @@ export default function RecruitingPage() {
                     {listings && listings.length > 0 ? (
                         listings.map((listing) => (
                             <RecruitingCard
-                                key={listing.listing_id}
+                                key={listing.posting_id || listing.listing_id || 0}
                                 listingTitle={listing.title}
-                                listingId={listing.listing_id}
+                                listingId={listing.posting_id || listing.listing_id || 0}
                             />
                         ))
                     ) : (

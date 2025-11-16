@@ -139,7 +139,12 @@ function ListingsPage() {
                 }
                 
                 const data = await response.json();
-                setAllData(data);
+
+                console.log(data);
+
+                // Extract listings array from response object
+                const listings = data.listings || data;
+                setAllData(listings);
                 setError(null);
             } catch (e) {
                 console.error("Error fetching listings:", e);
