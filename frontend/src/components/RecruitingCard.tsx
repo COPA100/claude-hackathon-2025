@@ -20,15 +20,24 @@ interface RecruitingCardProps {
     listingId: number;
 }
 
-export default function RecruitingCard({ listingTitle, listingId }: RecruitingCardProps) {
+export default function RecruitingCard({
+    listingTitle,
+    listingId,
+}: RecruitingCardProps) {
     const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState<string>("");
-    const [searchResults, setSearchResults] = useState<Applicant[] | null>(null);
-    const [expandedApplicant, setExpandedApplicant] = useState<number | null>(null);
+    const [searchResults, setSearchResults] = useState<Applicant[] | null>(
+        null
+    );
+    const [expandedApplicant, setExpandedApplicant] = useState<number | null>(
+        null
+    );
     const [showContact, setShowContact] = useState<number | null>(null);
 
     const toggleApplicant = (applicantId: number) => {
-        setExpandedApplicant(expandedApplicant === applicantId ? null : applicantId);
+        setExpandedApplicant(
+            expandedApplicant === applicantId ? null : applicantId
+        );
     };
 
     const toggleContact = (applicantId: number) => {
@@ -40,15 +49,18 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
         setIsSearching(true);
 
         console.log("Searching for applicants for listing:", listingId);
-        
+
         try {
-            const response = await fetch(`http://172.25.83.86:8802/top_candidates/${listingId}`, {
-                method: "GET",
-                mode: "cors",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await fetch(
+                `http://172.25.83.86:8802/top_candidates/${listingId}`,
+                {
+                    method: "GET",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -56,9 +68,59 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
 
             const result = await response.json();
             console.log("Search results:", result);
-            
-            // Ensure result is an array
-            const applicants = Array.isArray(result) ? result : (result.applicants || []);
+
+            // Parse the result format: {student_id: [studentData, score], ...}
+            let applicants: Applicant[] = [];
+
+            if (Array.isArray(result)) {
+                applicants = result;
+            } else if (typeof result === "object") {
+                // Convert object format to array
+                applicants = Object.entries(result).map(
+                    ([studentId, data]: [string, any]) => {
+                        const [studentData, score] = Array.isArray(data)
+                            ? data
+                            : [data, 0];
+                        return {
+                            applicant_id:
+                                studentData.student_id || parseInt(studentId),
+                            name:
+                                studentData.name ||
+                                (studentData.first_name && studentData.last_name
+                                    ? `${studentData.first_name} ${studentData.last_name}`
+                                    : "Unknown"),
+                            score: typeof score === "number" ? score : 0,
+                            experience:
+                                studentData.student_experiences ||
+                                studentData.experience ||
+                                studentData.relevant_experience ||
+                                "",
+                            major: studentData.major || "",
+                            grad_year:
+                                studentData.graduation_year ||
+                                studentData.expected_graduation ||
+                                (studentData.year_of_study
+                                    ? `Year ${studentData.year_of_study}`
+                                    : ""),
+                            gpa: studentData.gpa || 0,
+                            bio: studentData.bio || studentData.about || "",
+                            availability: studentData.available_hours_per_week
+                                ? `${studentData.available_hours_per_week} hours/week`
+                                : studentData.availability || "",
+                            interests:
+                                studentData.interests ||
+                                studentData.research_interests ||
+                                "",
+                            email: studentData.email || "",
+                            phone:
+                                studentData.phone ||
+                                studentData.phone_number ||
+                                "",
+                        };
+                    }
+                );
+            }
+
             setSearchResults(applicants);
         } catch (error) {
             console.error("Error searching applicants:", error);
@@ -77,9 +139,7 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
             <div className="space-y-4">
                 {error && (
                     <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-sm text-red-600">
-                            {error}
-                        </p>
+                        <p className="text-sm text-red-600">{error}</p>
                     </div>
                 )}
 
@@ -88,11 +148,13 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                     disabled={isSearching}
                     className={`w-full text-white font-medium py-3 px-6 rounded-lg transition-colors ${
                         isSearching
-                            ? 'bg-purple-400 cursor-not-allowed'
-                            : 'bg-purple-600 hover:bg-purple-700'
+                            ? "bg-purple-400 cursor-not-allowed"
+                            : "bg-purple-600 hover:bg-purple-700"
                     }`}
                 >
-                    {isSearching ? 'Searching...' : 'Search for Qualified Applicants'}
+                    {isSearching
+                        ? "Searching..."
+                        : "Search for Qualified Applicants"}
                 </button>
             </div>
 
@@ -110,7 +172,9 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                             >
                                 <div
                                     className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                                    onClick={() => toggleApplicant(applicant.applicant_id)}
+                                    onClick={() =>
+                                        toggleApplicant(applicant.applicant_id)
+                                    }
                                 >
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3">
@@ -140,7 +204,8 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                                             </div>
                                             <svg
                                                 className={`w-5 h-5 text-gray-400 transition-transform ${
-                                                    expandedApplicant === applicant.applicant_id
+                                                    expandedApplicant ===
+                                                    applicant.applicant_id
                                                         ? "rotate-180"
                                                         : ""
                                                 }`}
@@ -159,7 +224,8 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                                     </div>
                                 </div>
 
-                                {expandedApplicant === applicant.applicant_id && (
+                                {expandedApplicant ===
+                                    applicant.applicant_id && (
                                     <div className="px-4 pb-4 pt-2 border-t border-gray-100 space-y-3">
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
@@ -227,16 +293,20 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    toggleContact(applicant.applicant_id);
+                                                    toggleContact(
+                                                        applicant.applicant_id
+                                                    );
                                                 }}
                                                 className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium py-2 px-4 rounded transition-colors"
                                             >
-                                                {showContact === applicant.applicant_id
+                                                {showContact ===
+                                                applicant.applicant_id
                                                     ? "Hide Contact Info"
                                                     : "Show Contact Info"}
                                             </button>
 
-                                            {showContact === applicant.applicant_id && (
+                                            {showContact ===
+                                                applicant.applicant_id && (
                                                 <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                                                     <div className="space-y-2 text-sm">
                                                         <div className="flex items-center gap-2">
@@ -247,7 +317,9 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                                                                 href={`mailto:${applicant.email}`}
                                                                 className="text-purple-600 hover:text-purple-700"
                                                             >
-                                                                {applicant.email}
+                                                                {
+                                                                    applicant.email
+                                                                }
                                                             </a>
                                                         </div>
                                                         <div className="flex items-center gap-2">
@@ -258,7 +330,9 @@ export default function RecruitingCard({ listingTitle, listingId }: RecruitingCa
                                                                 href={`tel:${applicant.phone}`}
                                                                 className="text-purple-600 hover:text-purple-700"
                                                             >
-                                                                {applicant.phone}
+                                                                {
+                                                                    applicant.phone
+                                                                }
                                                             </a>
                                                         </div>
                                                     </div>

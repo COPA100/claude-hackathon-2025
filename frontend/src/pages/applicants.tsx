@@ -34,71 +34,86 @@ export default function ApplicantsPage() {
         const fetchApplicantsForAllListings = async () => {
             try {
                 setLoading(true);
-                
+
                 // First, get all listings
-                const listingsResponse = await fetch("http://172.25.83.86:8802/get_listings", {
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const listingsResponse = await fetch(
+                    "http://172.25.83.86:8802/get_listings",
+                    {
+                        mode: "cors",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
 
                 if (!listingsResponse.ok) {
-                    throw new Error(`Failed to fetch listings: ${listingsResponse.status}`);
+                    throw new Error(
+                        `Failed to fetch listings: ${listingsResponse.status}`
+                    );
                 }
 
                 const data = await listingsResponse.json();
-                
+
                 // Extract listings array from response object
                 const listings = data.listings || data;
-                
+
                 // Ensure listings is an array
-                const listingsArray = Array.isArray(listings) ? listings : [listings];
-                
+                const listingsArray = Array.isArray(listings)
+                    ? listings
+                    : [listings];
+
                 // For each listing, fetch the top applicants ONE AT A TIME
                 const listingsWithApplicants: ListingWithApplicants[] = [];
-                
+
                 for (const listing of listingsArray) {
                     try {
-                        const response = await fetch("http://172.25.83.86:8802/top_candidates", {
-                            method: "GET",
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                listing_id: listing.listing_id,
-                            }),
-                        });
-
-                        
+                        const response = await fetch(
+                            "http://172.25.83.86:8802/top_candidates",
+                            {
+                                method: "GET",
+                                mode: "cors",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    listing_id: listing.listing_id,
+                                }),
+                            }
+                        );
 
                         if (!response.ok) {
-                            console.error(`Failed to fetch applicants for listing ${listing.listing_id}`);
+                            console.error(
+                                `Failed to fetch applicants for listing ${listing.listing_id}`
+                            );
                             listingsWithApplicants.push({
                                 listing_id: listing.listing_id,
                                 listing_title: listing.title,
-                                applicants: []
+                                applicants: [],
                             });
                             continue;
                         }
 
                         const data = await response.json();
-                        
+
                         // Ensure applicants is an array
-                        const applicants = Array.isArray(data) ? data : (data.applicants || []);
-                        
+                        const applicants = Array.isArray(data)
+                            ? data
+                            : data.applicants || [];
+
                         listingsWithApplicants.push({
                             listing_id: listing.listing_id,
                             listing_title: listing.title,
-                            applicants: applicants
+                            applicants: applicants,
                         });
                     } catch (error) {
-                        console.error(`Error fetching applicants for listing ${listing.listing_id}:`, error);
+                        console.error(
+                            `Error fetching applicants for listing ${listing.listing_id}:`,
+                            error
+                        );
                         listingsWithApplicants.push({
                             listing_id: listing.listing_id,
                             listing_title: listing.title,
-                            applicants: []
+                            applicants: [],
                         });
                     }
                 }
@@ -107,10 +122,14 @@ export default function ApplicantsPage() {
                 setError(null);
             } catch (e) {
                 console.error("Error fetching data:", e);
-                if (e instanceof TypeError && e.message === 'Failed to fetch') {
-                    setError("Cannot connect to server. Check if the backend is running and CORS is enabled.");
+                if (e instanceof TypeError && e.message === "Failed to fetch") {
+                    setError(
+                        "Cannot connect to server. Check if the backend is running and CORS is enabled."
+                    );
                 } else {
-                    setError(e instanceof Error ? e.message : "An error occurred");
+                    setError(
+                        e instanceof Error ? e.message : "An error occurred"
+                    );
                 }
             } finally {
                 setLoading(false);
